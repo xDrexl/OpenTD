@@ -422,6 +422,10 @@ Gameplay architecture should not change.
 
 # Phase 18 — Optional Asset Pipeline
 
+Status: deferred. The current generated SVG workflow produces replaceable assets
+without creating an MVP bottleneck, so a dedicated image-generation pipeline
+would add infrastructure without a demonstrated need.
+
 Only after the game architecture is proven:
 
 Codex  
