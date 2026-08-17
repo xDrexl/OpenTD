@@ -78,9 +78,9 @@ godot --headless --path . --quit
 ## Releases
 
 GitHub Actions exports Windows x64 and macOS Universal archives from the
-committed Godot export presets. Pull requests and manual workflow runs provide
-downloadable artifacts; pushing a `v*` tag publishes both archives to a GitHub
-Release.
+committed Godot export presets. Every successful update to `main` publishes both
+archives as a versioned prerelease. Pull requests and manual runs also provide
+temporary workflow artifacts, while a `v*` tag publishes a named stable release.
 
 The current macOS build is ad-hoc signed for testing and is not notarized.
 
