@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Presentation/EnemyView.cs" id="1_enemy_view"]
+[ext_resource type="Texture2D" path="res://assets/generated/fast_enemy.svg" id="2_fast_enemy"]
+
+[node name="FastEnemy" type="Sprite2D"]
+texture_filter = 1
+texture = ExtResource("2_fast_enemy")
+script = ExtResource("1_enemy_view")

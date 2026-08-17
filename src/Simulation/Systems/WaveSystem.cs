@@ -51,7 +51,7 @@ public sealed class WaveSystem(WaveConfiguration configuration) : ISystem
 
         while (spawnedEnemies < definition.EnemyCount && secondsRemaining <= 0)
         {
-            SpawnEnemy(world, definition.Enemy);
+            SpawnEnemy(world, definition.Enemies[spawnedEnemies]);
             spawnedEnemies++;
             secondsRemaining += Math.Max(0, definition.SpawnIntervalSeconds);
         }
@@ -109,6 +109,7 @@ public sealed class WaveSystem(WaveConfiguration configuration) : ISystem
 
         var enemy = world.CreateEntity();
         world.SetComponent(enemy, new Enemy(enemyConfiguration.BaseDamage));
+        world.SetComponent(enemy, new EnemyArchetype(enemyConfiguration.Archetype));
         world.SetComponent(enemy, new Health(enemyConfiguration.Health, enemyConfiguration.Health));
         world.SetComponent(enemy, new Reward(enemyConfiguration.Reward));
         world.SetComponent(enemy, new Position(configuration.Path[0]));

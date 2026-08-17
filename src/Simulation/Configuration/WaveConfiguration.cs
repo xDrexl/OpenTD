@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using OpenTD.Simulation.Components;
 
 namespace OpenTD.Simulation.Configuration;
 
@@ -11,10 +12,49 @@ public sealed record WaveConfiguration(
     public static WaveConfiguration CreateDefault(MapConfiguration map) => new(
         new WaveDefinition[]
         {
-            new(3, 1.5f, new EnemyConfiguration(100, 10, 1, 3)),
-            new(5, 1.2f, new EnemyConfiguration(110, 12, 2, 3)),
-            new(7, 1, new EnemyConfiguration(120, 14, 2, 4)),
+            new(
+                new EnemyConfiguration[]
+                {
+                    BasicEnemy(),
+                    BasicEnemy(),
+                    BasicEnemy(),
+                },
+                1.5f),
+            new(
+                new EnemyConfiguration[]
+                {
+                    BasicEnemy(health: 12, baseDamage: 2),
+                    FastEnemy(),
+                    BasicEnemy(health: 12, baseDamage: 2),
+                    FastEnemy(),
+                    BasicEnemy(health: 12, baseDamage: 2),
+                },
+                1.2f),
+            new(
+                new EnemyConfiguration[]
+                {
+                    FastEnemy(health: 9, baseDamage: 2),
+                    BasicEnemy(speed: 120, health: 14, baseDamage: 2, reward: 4),
+                    FastEnemy(health: 9, baseDamage: 2),
+                    BasicEnemy(speed: 120, health: 14, baseDamage: 2, reward: 4),
+                    FastEnemy(health: 9, baseDamage: 2),
+                    BasicEnemy(speed: 120, health: 14, baseDamage: 2, reward: 4),
+                    FastEnemy(health: 9, baseDamage: 2),
+                },
+                1),
         },
         InterWaveDelaySeconds: 3,
         Path: map.Path);
+
+    private static EnemyConfiguration BasicEnemy(
+        float speed = 100,
+        int health = 10,
+        int baseDamage = 1,
+        int reward = 3) =>
+        new(speed, health, baseDamage, reward, EnemyArchetypeId.Basic);
+
+    private static EnemyConfiguration FastEnemy(
+        int health = 7,
+        int baseDamage = 1) =>
+        new(160, health, baseDamage, 4, EnemyArchetypeId.Fast);
 }

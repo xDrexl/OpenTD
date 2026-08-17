@@ -319,6 +319,8 @@ Do not expand scope until this review occurs.
 
 # Phase 12 — Enemy Variety
 
+Status: first variety increment complete with basic and fast enemy archetypes.
+
 Possible additions:
 
 - fast enemy;
@@ -449,3 +451,4 @@ Do not build tomorrow's framework today.
 # Manual Validation Status
 
 - Phases 7–10: manual runtime validation passed on 2026-08-17.
+- Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
