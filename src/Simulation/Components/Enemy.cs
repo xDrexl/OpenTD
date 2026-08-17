@@ -1,3 +1,3 @@
 namespace OpenTD.Simulation.Components;
 
-public readonly record struct Enemy;
+public readonly record struct Enemy(int BaseDamage);

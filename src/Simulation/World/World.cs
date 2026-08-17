@@ -8,6 +8,7 @@ public sealed class World
 {
     private readonly HashSet<Entity> _entities = [];
     private readonly Dictionary<Type, IComponentStore> _componentStores = [];
+    private readonly Dictionary<Type, object> _eventBuffers = [];
     private int _nextEntityId;
 
     public Entity CreateEntity()
@@ -86,6 +87,29 @@ public sealed class World
         }
 
         return first.Entities.Where(second.Contains);
+    }
+
+    public void Emit<TEvent>(TEvent gameEvent)
+        where TEvent : notnull
+    {
+        if (!_eventBuffers.TryGetValue(typeof(TEvent), out var untypedBuffer))
+        {
+            untypedBuffer = new List<TEvent>();
+            _eventBuffers.Add(typeof(TEvent), untypedBuffer);
+        }
+
+        ((List<TEvent>)untypedBuffer).Add(gameEvent);
+    }
+
+    public IReadOnlyList<TEvent> DrainEvents<TEvent>()
+        where TEvent : notnull
+    {
+        if (!_eventBuffers.Remove(typeof(TEvent), out var untypedBuffer))
+        {
+            return [];
+        }
+
+        return (List<TEvent>)untypedBuffer;
     }
 
     private ComponentStore<T> GetOrCreateStore<T>()
