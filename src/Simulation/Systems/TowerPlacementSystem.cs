@@ -12,9 +12,17 @@ public sealed class TowerPlacementSystem(
     MapConfiguration map,
     TowerPlacementConfiguration configuration) : ISystem
 {
-    public bool CanPlace(SimulationWorld world, Vector2 position)
+    public bool CanPlace(
+        SimulationWorld world,
+        Vector2 position,
+        TowerArchetypeId archetype = TowerArchetypeId.Basic)
     {
-        var radius = configuration.TowerRadius;
+        if (!configuration.TryGetDefinition(archetype, out var definition))
+        {
+            return false;
+        }
+
+        var radius = definition.PlacementRadius;
         if (position.X < radius || position.X > map.Width - radius ||
             position.Y < radius || position.Y > map.Height - radius)
         {
@@ -29,7 +37,8 @@ public sealed class TowerPlacementSystem(
         foreach (var towerEntity in world.Query<Tower, Position>())
         {
             var towerPosition = world.GetComponent<Position>(towerEntity).Value;
-            if (Vector2.Distance(position, towerPosition) < radius * 2)
+            var existingRadius = world.GetComponent<PlacementRadius>(towerEntity).Value;
+            if (Vector2.Distance(position, towerPosition) < radius + existingRadius)
             {
                 return false;
             }
@@ -37,14 +46,15 @@ public sealed class TowerPlacementSystem(
 
         var currencyEntities = world.Query<Currency>().Take(2).ToArray();
         return currencyEntities.Length == 1 &&
-               world.GetComponent<Currency>(currencyEntities[0]).Amount >= configuration.BuildCost;
+               world.GetComponent<Currency>(currencyEntities[0]).Amount >= definition.BuildCost;
     }
 
     public void Update(SimulationWorld world, float deltaSeconds)
     {
         foreach (var command in world.DrainCommands<PlaceTower>())
         {
-            if (!CanPlace(world, command.Position))
+            if (!configuration.TryGetDefinition(command.Archetype, out var definition) ||
+                !CanPlace(world, command.Position, command.Archetype))
             {
                 continue;
             }
@@ -53,19 +63,21 @@ public sealed class TowerPlacementSystem(
             var currency = world.GetComponent<Currency>(currencyEntity);
             world.SetComponent(
                 currencyEntity,
-                currency with { Amount = currency.Amount - configuration.BuildCost });
+                currency with { Amount = currency.Amount - definition.BuildCost });
 
             var tower = world.CreateEntity();
             world.SetComponent(tower, new Tower());
+            world.SetComponent(tower, new TowerArchetype(command.Archetype));
             world.SetComponent(tower, new Position(command.Position));
-            world.SetComponent(tower, new BuildCost(configuration.BuildCost));
-            world.SetComponent(tower, new AttackRange(configuration.AttackRange));
+            world.SetComponent(tower, new PlacementRadius(definition.PlacementRadius));
+            world.SetComponent(tower, new BuildCost(definition.BuildCost));
+            world.SetComponent(tower, new AttackRange(definition.AttackRange));
             world.SetComponent(
                 tower,
-                new AttackCooldown(configuration.AttackIntervalSeconds, 0));
+                new AttackCooldown(definition.AttackIntervalSeconds, 0));
             world.SetComponent(
                 tower,
-                new AttackStats(configuration.AttackDamage, configuration.ProjectileSpeed));
+                new AttackStats(definition.AttackDamage, definition.ProjectileSpeed));
         }
     }
 

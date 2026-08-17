@@ -17,12 +17,11 @@ public sealed class TowerPlacementSystemTests
         new Vector2[] { new(0, 100), new(200, 100) });
 
     private static readonly TowerPlacementConfiguration Configuration = new(
-        5,
-        10,
-        50,
-        1,
-        2,
-        100);
+        new TowerDefinition[]
+        {
+            new(TowerArchetypeId.Basic, 5, 10, 50, 1, 2, 100),
+            new(TowerArchetypeId.Rapid, 7, 8, 40, 0.25f, 1, 150),
+        });
 
     [Fact]
     public void ValidPlacementCreatesTowerAndDeductsCurrency()
@@ -35,6 +34,8 @@ public sealed class TowerPlacementSystemTests
 
         var tower = Assert.Single(world.Query<Tower, Position>());
         Assert.Equal(new Vector2(50, 50), world.GetComponent<Position>(tower).Value);
+        Assert.Equal(TowerArchetypeId.Basic, world.GetComponent<TowerArchetype>(tower).Id);
+        Assert.Equal(10, world.GetComponent<PlacementRadius>(tower).Value);
         Assert.Equal(5, world.GetComponent<BuildCost>(tower).Amount);
         Assert.Equal(50, world.GetComponent<AttackRange>(tower).Radius);
         Assert.Equal(1, world.GetComponent<AttackCooldown>(tower).IntervalSeconds);
@@ -79,6 +80,7 @@ public sealed class TowerPlacementSystemTests
         var existingTower = world.CreateEntity();
         world.SetComponent(existingTower, new Tower());
         world.SetComponent(existingTower, new Position(new Vector2(50, 50)));
+        world.SetComponent(existingTower, new PlacementRadius(10));
         var system = new TowerPlacementSystem(Map, Configuration);
         world.EnqueueCommand(new PlaceTower(new Vector2(60, 50)));
 

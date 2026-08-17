@@ -15,7 +15,9 @@ public sealed partial class Main : Node2D
 {
     private readonly GameSimulation _simulation;
     private readonly TowerPlacementSystem _towerPlacementSystem;
+    private readonly TowerPlacementConfiguration _towerPlacementConfiguration;
     private readonly WaveConfiguration _waveConfiguration;
+    private TowerArchetypeId _selectedTowerArchetype = TowerArchetypeId.Basic;
     private Entity _gameStateEntity;
     private readonly Dictionary<Entity, EnemyView> _enemyViews = [];
     private readonly Dictionary<Entity, TowerView> _towerViews = [];
@@ -25,9 +27,10 @@ public sealed partial class Main : Node2D
     {
         var map = MapConfiguration.CreateDefault();
         _waveConfiguration = WaveConfiguration.CreateDefault(map);
+        _towerPlacementConfiguration = TowerPlacementConfiguration.Default;
         _towerPlacementSystem = new TowerPlacementSystem(
             map,
-            TowerPlacementConfiguration.Default);
+            _towerPlacementConfiguration);
         _simulation = new GameSimulation(
         [
             new WaveSystem(_waveConfiguration),
@@ -77,6 +80,10 @@ public sealed partial class Main : Node2D
             waveEntity,
             WaveState.Create(_waveConfiguration.Waves.Count, firstWaveEnemyCount));
         GetNode<WaveView>("Interface/Wave").Initialize(_simulation.World, waveEntity);
+        GetNode<TowerSelectionView>("Interface/TowerSelection").Initialize(
+            _towerPlacementConfiguration,
+            _selectedTowerArchetype,
+            SelectTower);
     }
 
     public override void _Process(double delta)
@@ -103,7 +110,9 @@ public sealed partial class Main : Node2D
         {
             var mousePosition = GetGlobalMousePosition();
             _simulation.World.EnqueueCommand(
-                new PlaceTower(new NumericsVector2(mousePosition.X, mousePosition.Y)));
+                new PlaceTower(
+                    new NumericsVector2(mousePosition.X, mousePosition.Y),
+                    _selectedTowerArchetype));
         }
     }
 
@@ -118,7 +127,10 @@ public sealed partial class Main : Node2D
 
         preview.Position = GetGlobalMousePosition();
         var position = new NumericsVector2(preview.Position.X, preview.Position.Y);
-        preview.Modulate = _towerPlacementSystem.CanPlace(_simulation.World, position)
+        preview.Modulate = _towerPlacementSystem.CanPlace(
+                _simulation.World,
+                position,
+                _selectedTowerArchetype)
             ? new Color(0.55f, 1, 0.55f, 0.65f)
             : new Color(1, 0.4f, 0.4f, 0.65f);
     }
@@ -132,7 +144,8 @@ public sealed partial class Main : Node2D
                 continue;
             }
 
-            var towerScene = GD.Load<PackedScene>("res://scenes/Tower.tscn");
+            var archetype = _simulation.World.GetComponent<TowerArchetype>(entity).Id;
+            var towerScene = GD.Load<PackedScene>(GetTowerScenePath(archetype));
             var towerView = towerScene.Instantiate<TowerView>();
             towerView.Initialize(_simulation.World, entity);
             AddChild(towerView);
@@ -171,6 +184,25 @@ public sealed partial class Main : Node2D
         EnemyArchetypeId.Fast => "res://scenes/FastEnemy.tscn",
         _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
     };
+
+    private static string GetTowerScenePath(TowerArchetypeId archetype) => archetype switch
+    {
+        TowerArchetypeId.Basic => "res://scenes/Tower.tscn",
+        TowerArchetypeId.Rapid => "res://scenes/RapidTower.tscn",
+        _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
+    };
+
+    private void SelectTower(TowerArchetypeId archetype)
+    {
+        _selectedTowerArchetype = archetype;
+        var preview = GetNode<Sprite2D>("PlacementPreview");
+        preview.Texture = GD.Load<Texture2D>(archetype switch
+        {
+            TowerArchetypeId.Basic => "res://assets/generated/tower.svg",
+            TowerArchetypeId.Rapid => "res://assets/generated/rapid_tower.svg",
+            _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
+        });
+    }
 
     private void SynchronizeProjectileViews()
     {
