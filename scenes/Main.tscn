@@ -63,7 +63,7 @@ script = ExtResource("6_wave")
 [node name="TowerSelection" type="HBoxContainer" parent="Interface"]
 offset_left = 20.0
 offset_top = 574.0
-offset_right = 318.0
+offset_right = 450.0
 offset_bottom = 626.0
 theme_override_constants/separation = 8
 script = ExtResource("8_tower_selection")
@@ -85,6 +85,12 @@ layout_mode = 2
 toggle_mode = true
 theme_override_font_sizes/font_size = 18
 text = "Rapid (7)"
+
+[node name="Slowing" type="Button" parent="Interface/TowerSelection"]
+layout_mode = 2
+toggle_mode = true
+theme_override_font_sizes/font_size = 18
+text = "Slowing (8)"
 
 [node name="GameState" type="Control" parent="Interface"]
 visible = false

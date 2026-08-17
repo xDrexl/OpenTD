@@ -38,6 +38,9 @@ public sealed partial class EnemyView : Sprite2D
         if (_world is not null && _world.TryGetComponent<Position>(_entity, out var position))
         {
             Position = new Vector2(position.Value.X, position.Value.Y);
+            Modulate = _world.TryGetComponent<SlowEffect>(_entity, out _)
+                ? new Color(0.55f, 0.85f, 1)
+                : Colors.White;
         }
     }
 }

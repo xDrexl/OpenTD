@@ -11,6 +11,15 @@ public sealed record TowerPlacementConfiguration(IReadOnlyList<TowerDefinition> 
         {
             new(TowerArchetypeId.Basic, 5, 28, 150, 0.75f, 2, 250),
             new(TowerArchetypeId.Rapid, 7, 24, 125, 0.3f, 1, 320),
+            new(
+                TowerArchetypeId.Slowing,
+                8,
+                26,
+                135,
+                1.2f,
+                1,
+                220,
+                new SlowDefinition(0.55f, 2.5f)),
         });
 
     public bool TryGetDefinition(TowerArchetypeId archetype, out TowerDefinition definition)

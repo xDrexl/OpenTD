@@ -78,6 +78,12 @@ public sealed class TowerPlacementSystem(
             world.SetComponent(
                 tower,
                 new AttackStats(definition.AttackDamage, definition.ProjectileSpeed));
+            if (definition.Slow is { } slow)
+            {
+                world.SetComponent(
+                    tower,
+                    new SlowOnHit(slow.SpeedMultiplier, slow.DurationSeconds));
+            }
         }
     }
 

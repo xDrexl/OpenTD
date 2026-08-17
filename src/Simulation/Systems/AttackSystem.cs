@@ -30,6 +30,11 @@ public sealed class AttackSystem : ISystem
                 projectile,
                 new Projectile(target, attackStats.ProjectileSpeed));
             world.SetComponent(projectile, new Damage(attackStats.Damage));
+            if (world.TryGetComponent<SlowOnHit>(tower, out var slow))
+            {
+                world.SetComponent(projectile, slow);
+            }
+
             world.SetComponent(
                 tower,
                 cooldown with { RemainingSeconds = cooldown.IntervalSeconds });
