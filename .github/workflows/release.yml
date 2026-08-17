@@ -61,7 +61,7 @@ jobs:
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: OpenTD-${{ github.ref_name }}
+          name: OpenTD-${{ github.run_id }}
           path: ${{ steps.export.outputs.archive_directory }}/*
           if-no-files-found: error
 
