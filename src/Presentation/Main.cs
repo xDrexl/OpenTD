@@ -15,17 +15,21 @@ public sealed partial class Main : Node2D
 {
     private readonly GameSimulation _simulation;
     private readonly TowerPlacementSystem _towerPlacementSystem;
+    private readonly WaveConfiguration _waveConfiguration;
+    private readonly Dictionary<Entity, EnemyView> _enemyViews = [];
     private readonly Dictionary<Entity, TowerView> _towerViews = [];
     private readonly Dictionary<Entity, ProjectileView> _projectileViews = [];
 
     public Main()
     {
         var map = MapConfiguration.CreateDefault();
+        _waveConfiguration = WaveConfiguration.CreateDefault(map);
         _towerPlacementSystem = new TowerPlacementSystem(
             map,
             TowerPlacementConfiguration.Default);
         _simulation = new GameSimulation(
         [
+            new WaveSystem(_waveConfiguration),
             new MovementSystem(),
             new PathCompletionSystem(),
             new BaseDamageSystem(),
@@ -37,10 +41,7 @@ public sealed partial class Main : Node2D
             new DeathSystem(),
             new EconomySystem(),
         ]);
-        MapPath = map.Path;
     }
-
-    private IReadOnlyList<NumericsVector2> MapPath { get; }
 
     public override void _Ready()
     {
@@ -58,24 +59,21 @@ public sealed partial class Main : Node2D
             _simulation.World,
             currencyEntity);
 
-        var enemy = _simulation.World.CreateEntity();
-        _simulation.World.SetComponent(enemy, new Enemy(1));
-        _simulation.World.SetComponent(enemy, new Health(10, 10));
-        _simulation.World.SetComponent(enemy, new Reward(3));
-        _simulation.World.SetComponent(enemy, new Position(MapPath[0]));
-        _simulation.World.SetComponent(enemy, new Movement(100));
-        _simulation.World.SetComponent(enemy, new PathProgress(MapPath, 1));
-
-        var enemyScene = GD.Load<PackedScene>("res://scenes/Enemy.tscn");
-        var enemyView = enemyScene.Instantiate<EnemyView>();
-        enemyView.Initialize(_simulation.World, enemy);
-        AddChild(enemyView);
+        var waveEntity = _simulation.World.CreateEntity();
+        var firstWaveEnemyCount = _waveConfiguration.Waves.Count == 0
+            ? 0
+            : _waveConfiguration.Waves[0].EnemyCount;
+        _simulation.World.SetComponent(
+            waveEntity,
+            WaveState.Create(_waveConfiguration.Waves.Count, firstWaveEnemyCount));
+        GetNode<WaveView>("Interface/Wave").Initialize(_simulation.World, waveEntity);
     }
 
     public override void _Process(double delta)
     {
         UpdatePlacementPreview();
         _simulation.Tick((float)delta);
+        SynchronizeEnemyViews();
         SynchronizeTowerViews();
         SynchronizeProjectileViews();
     }
@@ -118,6 +116,30 @@ public sealed partial class Main : Node2D
             towerView.Initialize(_simulation.World, entity);
             AddChild(towerView);
             _towerViews.Add(entity, towerView);
+        }
+    }
+
+    private void SynchronizeEnemyViews()
+    {
+        foreach (var entity in _enemyViews.Keys
+                     .Where(entity => !_simulation.World.IsAlive(entity))
+                     .ToArray())
+        {
+            _enemyViews.Remove(entity);
+        }
+
+        foreach (var entity in _simulation.World.Query<Enemy, Position>())
+        {
+            if (_enemyViews.ContainsKey(entity))
+            {
+                continue;
+            }
+
+            var enemyScene = GD.Load<PackedScene>("res://scenes/Enemy.tscn");
+            var enemyView = enemyScene.Instantiate<EnemyView>();
+            enemyView.Initialize(_simulation.World, entity);
+            AddChild(enemyView);
+            _enemyViews.Add(entity, enemyView);
         }
     }
 
