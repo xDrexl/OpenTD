@@ -439,6 +439,9 @@ Generated content remains replaceable presentation data.
 
 # Phase 19 — Optional Godot Agent Integration
 
+Status: deferred. The existing CLI, automated tests, and headless Godot workflow
+have not created a measurable editor-automation bottleneck.
+
 Evaluate Godot MCP/editor automation only if CLI/file workflows become a measurable bottleneck.
 
 Potential tools:
@@ -453,6 +456,135 @@ Potential tools:
 MCP is optional infrastructure.
 
 The game must not depend on it.
+
+---
+
+# Pre-MVP Feature Cycle
+
+The following features must be completed before producing the MVP candidate.
+
+Run rules agreed for this cycle:
+
+- runs continue through procedurally generated stages until defeat;
+- every stage, including stage 1, uses a generated map;
+- stage 1 has three waves and each subsequent stage adds exactly one wave;
+- enemy health, speed, damage, and rewards do not scale between stages;
+- base health, currency, and placed towers do not carry between stages;
+- saves are stage-start checkpoints, not mid-wave simulation snapshots;
+- defeat ends the run and deletes its checkpoint.
+
+---
+
+# Phase 20 — Main Menu
+
+Goal: provide an explicit entry point for starting and resuming runs.
+
+Add:
+
+- a main-menu scene as the application entry point;
+- New Game, Continue, and Quit actions;
+- a disabled Continue action when no valid checkpoint exists;
+- confirmation before New Game replaces an existing run.
+
+Exit criteria:
+
+> The player can start, resume, replace, or exit a run from the main menu.
+
+---
+
+# Phase 21 — Stage Checkpoint Save/Load
+
+Goal: resume an endless run safely without serializing runtime ECS internals.
+
+Add:
+
+- a versioned checkpoint containing only the stage number and run seed;
+- JSON persistence in Godot's `user://` data directory;
+- atomic checkpoint replacement;
+- deterministic reconstruction of the saved stage;
+- graceful handling of missing, malformed, or incompatible saves.
+
+Behaviour:
+
+- New Game creates a stage-1 checkpoint with a new run seed;
+- quitting during a stage leaves its stage-start checkpoint intact;
+- completing a stage replaces it with the next-stage checkpoint;
+- defeat deletes it;
+- no entities, towers, enemies, projectiles, timers, health, or currency are
+  serialized.
+
+Automated tests must cover round trips, replacement, missing files, malformed
+data, unsupported versions, and deletion.
+
+Exit criteria:
+
+> Continue reconstructs the same stage and map from a small, versioned save.
+
+---
+
+# Phase 22 — Procedural Stage Maps
+
+Goal: generate a different valid battlefield for every stage.
+
+Add:
+
+- an engine-independent deterministic map generator using run seed and stage;
+- a bounded orthogonal path from the left-side spawn to the right-side base;
+- deterministic terrain variation and obstacle placement;
+- obstacle clearance from the path, spawn, base, and map boundaries;
+- runtime map presentation driven by `MapConfiguration` rather than fixed scene
+  coordinates.
+
+Preserve the existing build-zone, path-clearance, obstacle, and tower-placement
+rules. Dynamic pathfinding is not required.
+
+Automated tests must verify determinism, cross-stage variation, bounds, obstacle
+clearance, and the presence of usable build space.
+
+Exit criteria:
+
+> A saved run always reconstructs the same valid map, while later stages use
+> different maps.
+
+---
+
+# Phase 23 — Endless Stage Progression
+
+Goal: connect completed stages into an endless run with increasing wave counts.
+
+Add:
+
+- stage-aware wave configuration;
+- `stage number + 2` waves per stage;
+- cycling of established enemy wave compositions without stat scaling;
+- a stage number in the gameplay HUD;
+- a stage-complete overlay with a Next Stage action;
+- next-stage checkpoint creation before advancement;
+- a defeat flow that deletes the checkpoint and returns to the main menu.
+
+Each new stage creates a fresh simulation with default base health and currency
+and no placed towers.
+
+Automated tests must verify wave-count progression, unchanged enemy statistics,
+checkpoint advancement, and checkpoint deletion on defeat.
+
+Exit criteria:
+
+> Completing a stage saves and launches a new map with one additional wave;
+> losing ends the run.
+
+---
+
+# Pre-MVP Cycle Manual Validation
+
+Before declaring the MVP candidate ready, manually verify:
+
+- New Game, replacement confirmation, Continue, and Quit;
+- quit and relaunch during a stage, then confirm that stage restarts;
+- complete multiple stages and confirm that maps change deterministically;
+- confirm that every later stage adds one wave;
+- confirm that health, currency, and towers reset between stages;
+- lose a run and confirm that Continue is no longer available.
 
 ---
 
