@@ -451,4 +451,4 @@ Do not build tomorrow's framework today.
 # Manual Validation Status
 
 - Phases 7–10: manual runtime validation passed on 2026-08-17.
-- Phase 12 fast enemy: manual runtime validation pending.
+- Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
