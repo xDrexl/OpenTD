@@ -89,6 +89,63 @@ public sealed class TowerPlacementSystemTests
         Assert.Single(world.Query<Tower>());
     }
 
+    [Fact]
+    public void PlacementOutsideBuildZonesIsRejected()
+    {
+        var map = Map with
+        {
+            BuildZones =
+            [
+                new MapRegion(new Vector2(20, 20), new Vector2(80, 80)),
+            ],
+        };
+        var world = CreateWorld(10);
+        var system = new TowerPlacementSystem(map, Configuration);
+        world.EnqueueCommand(new PlaceTower(new Vector2(150, 50)));
+
+        system.Update(world, 0);
+
+        Assert.Empty(world.Query<Tower>());
+    }
+
+    [Fact]
+    public void PlacementFullyInsideBuildZoneIsAllowed()
+    {
+        var map = Map with
+        {
+            BuildZones =
+            [
+                new MapRegion(new Vector2(20, 20), new Vector2(80, 80)),
+            ],
+        };
+        var world = CreateWorld(10);
+        var system = new TowerPlacementSystem(map, Configuration);
+        world.EnqueueCommand(new PlaceTower(new Vector2(50, 50)));
+
+        system.Update(world, 0);
+
+        Assert.Single(world.Query<Tower>());
+    }
+
+    [Fact]
+    public void PlacementIntersectingObstacleIsRejected()
+    {
+        var map = Map with
+        {
+            Obstacles =
+            [
+                new MapRegion(new Vector2(40, 40), new Vector2(60, 60)),
+            ],
+        };
+        var world = CreateWorld(10);
+        var system = new TowerPlacementSystem(map, Configuration);
+        world.EnqueueCommand(new PlaceTower(new Vector2(68, 50)));
+
+        system.Update(world, 0);
+
+        Assert.Empty(world.Query<Tower>());
+    }
+
     private static SimulationWorld CreateWorld(int currencyAmount)
     {
         var world = new SimulationWorld();
