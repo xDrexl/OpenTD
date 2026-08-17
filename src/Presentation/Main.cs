@@ -156,13 +156,21 @@ public sealed partial class Main : Node2D
                 continue;
             }
 
-            var enemyScene = GD.Load<PackedScene>("res://scenes/Enemy.tscn");
+            var archetype = _simulation.World.GetComponent<EnemyArchetype>(entity).Id;
+            var enemyScene = GD.Load<PackedScene>(GetEnemyScenePath(archetype));
             var enemyView = enemyScene.Instantiate<EnemyView>();
             enemyView.Initialize(_simulation.World, entity);
             AddChild(enemyView);
             _enemyViews.Add(entity, enemyView);
         }
     }
+
+    private static string GetEnemyScenePath(EnemyArchetypeId archetype) => archetype switch
+    {
+        EnemyArchetypeId.Basic => "res://scenes/Enemy.tscn",
+        EnemyArchetypeId.Fast => "res://scenes/FastEnemy.tscn",
+        _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
+    };
 
     private void SynchronizeProjectileViews()
     {

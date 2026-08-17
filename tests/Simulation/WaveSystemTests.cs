@@ -90,6 +90,31 @@ public sealed class WaveSystemTests
         Assert.Equal(3, GetState(world).RemainingEnemies);
     }
 
+    [Fact]
+    public void MixedWaveSpawnsConfiguredArchetypesInOrder()
+    {
+        var basic = new EnemyConfiguration(10, 7, 2, 3, EnemyArchetypeId.Basic);
+        var fast = new EnemyConfiguration(20, 4, 1, 5, EnemyArchetypeId.Fast);
+        var configuration = CreateConfiguration(
+            new WaveDefinition(new EnemyConfiguration[] { basic, fast }, 1));
+        var (world, system) = CreateWorld(configuration);
+
+        system.Update(world, 0);
+        system.Update(world, 1);
+
+        var enemies = world.Query<Enemy>().ToArray();
+        Assert.Equal(2, enemies.Length);
+        Assert.Equal(
+            EnemyArchetypeId.Basic,
+            world.GetComponent<EnemyArchetype>(enemies[0]).Id);
+        Assert.Equal(
+            EnemyArchetypeId.Fast,
+            world.GetComponent<EnemyArchetype>(enemies[1]).Id);
+        Assert.Equal(20, world.GetComponent<Movement>(enemies[1]).Speed);
+        Assert.Equal(4, world.GetComponent<Health>(enemies[1]).Current);
+        Assert.Equal(5, world.GetComponent<Reward>(enemies[1]).Amount);
+    }
+
     private static (SimulationWorld World, WaveSystem System) CreateWorld(
         WaveConfiguration configuration)
     {
