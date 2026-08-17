@@ -384,6 +384,9 @@ Only introduce dynamic pathfinding if gameplay requires it.
 
 # Phase 16 — Persistence
 
+Status: deferred until the MVP has meaningful settings, unlocks, progression, or
+scores to persist. Runtime ECS state will not be saved prematurely.
+
 Add only when meaningful persistent state exists.
 
 Potential:
@@ -400,6 +403,8 @@ Persist domain state.
 ---
 
 # Phase 17 — Presentation Pass
+
+Status: first presentation pass complete and manually validated.
 
 Improve:
 
@@ -464,4 +469,6 @@ Do not build tomorrow's framework today.
 - Phases 13–14 tower variety and slowing effect: manual runtime validation
   passed on 2026-08-17.
 - Phase 15 TileMap/build zones/obstacles: manual runtime validation passed on
+  2026-08-17.
+- Phase 17 presentation feedback: manual runtime validation passed on
   2026-08-17.
