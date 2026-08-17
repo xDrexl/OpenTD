@@ -9,6 +9,7 @@ public sealed class World
     private readonly HashSet<Entity> _entities = [];
     private readonly Dictionary<Type, IComponentStore> _componentStores = [];
     private readonly Dictionary<Type, object> _eventBuffers = [];
+    private readonly Dictionary<Type, object> _commandBuffers = [];
     private int _nextEntityId;
 
     public Entity CreateEntity()
@@ -110,6 +111,29 @@ public sealed class World
         }
 
         return (List<TEvent>)untypedBuffer;
+    }
+
+    public void EnqueueCommand<TCommand>(TCommand command)
+        where TCommand : notnull
+    {
+        if (!_commandBuffers.TryGetValue(typeof(TCommand), out var untypedBuffer))
+        {
+            untypedBuffer = new List<TCommand>();
+            _commandBuffers.Add(typeof(TCommand), untypedBuffer);
+        }
+
+        ((List<TCommand>)untypedBuffer).Add(command);
+    }
+
+    public IReadOnlyList<TCommand> DrainCommands<TCommand>()
+        where TCommand : notnull
+    {
+        if (!_commandBuffers.Remove(typeof(TCommand), out var untypedBuffer))
+        {
+            return [];
+        }
+
+        return (List<TCommand>)untypedBuffer;
     }
 
     private ComponentStore<T> GetOrCreateStore<T>()
