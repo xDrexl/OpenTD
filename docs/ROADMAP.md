@@ -404,7 +404,7 @@ Persist domain state.
 
 # Phase 17 — Presentation Pass
 
-Status: first presentation pass implemented; manual runtime validation pending.
+Status: first presentation pass complete and manually validated.
 
 Improve:
 
@@ -469,4 +469,6 @@ Do not build tomorrow's framework today.
 - Phases 13–14 tower variety and slowing effect: manual runtime validation
   passed on 2026-08-17.
 - Phase 15 TileMap/build zones/obstacles: manual runtime validation passed on
+  2026-08-17.
+- Phase 17 presentation feedback: manual runtime validation passed on
   2026-08-17.
