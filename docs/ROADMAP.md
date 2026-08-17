@@ -286,6 +286,9 @@ This is MVP.
 
 Goal: evaluate development methodology before expanding scope.
 
+Status: complete. The architecture is validated with targeted follow-up
+constraints. See `docs/ARCHITECTURE_EVALUATION.md`.
+
 Measure:
 
 - Codex token consumption;
