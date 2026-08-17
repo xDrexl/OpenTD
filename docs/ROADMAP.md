@@ -334,6 +334,9 @@ Prefer component composition over subclasses.
 
 # Phase 13 — Tower Variety
 
+Status: first variety increment complete with basic and rapid-fire tower
+archetypes.
+
 Possible additions:
 
 - rapid-fire tower;
@@ -452,3 +455,4 @@ Do not build tomorrow's framework today.
 
 - Phases 7–10: manual runtime validation passed on 2026-08-17.
 - Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
+- Phase 13 rapid-fire tower: manual runtime validation pending.
