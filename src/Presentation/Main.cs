@@ -16,6 +16,7 @@ public sealed partial class Main : Node2D
     private readonly GameSimulation _simulation;
     private readonly TowerPlacementSystem _towerPlacementSystem;
     private readonly WaveConfiguration _waveConfiguration;
+    private Entity _gameStateEntity;
     private readonly Dictionary<Entity, EnemyView> _enemyViews = [];
     private readonly Dictionary<Entity, TowerView> _towerViews = [];
     private readonly Dictionary<Entity, ProjectileView> _projectileViews = [];
@@ -40,11 +41,20 @@ public sealed partial class Main : Node2D
             new DamageSystem(),
             new DeathSystem(),
             new EconomySystem(),
+            new GameStateSystem(),
         ]);
     }
 
     public override void _Ready()
     {
+        _gameStateEntity = _simulation.World.CreateEntity();
+        _simulation.World.SetComponent(
+            _gameStateEntity,
+            new GameStatus(GamePhase.Ready));
+        GetNode<GameStateView>("Interface/GameState").Initialize(
+            _simulation.World,
+            _gameStateEntity);
+
         var baseEntity = _simulation.World.CreateEntity();
         _simulation.World.SetComponent(baseEntity, new Base());
         _simulation.World.SetComponent(baseEntity, new Health(20, 20));
@@ -72,7 +82,11 @@ public sealed partial class Main : Node2D
     public override void _Process(double delta)
     {
         UpdatePlacementPreview();
-        _simulation.Tick((float)delta);
+        if (!IsGameOver())
+        {
+            _simulation.Tick((float)delta);
+        }
+
         SynchronizeEnemyViews();
         SynchronizeTowerViews();
         SynchronizeProjectileViews();
@@ -80,7 +94,8 @@ public sealed partial class Main : Node2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton
+        if (GetGamePhase() == GamePhase.Running &&
+            @event is InputEventMouseButton
             {
                 ButtonIndex: MouseButton.Left,
                 Pressed: true,
@@ -95,6 +110,12 @@ public sealed partial class Main : Node2D
     private void UpdatePlacementPreview()
     {
         var preview = GetNode<Sprite2D>("PlacementPreview");
+        preview.Visible = GetGamePhase() == GamePhase.Running;
+        if (!preview.Visible)
+        {
+            return;
+        }
+
         preview.Position = GetGlobalMousePosition();
         var position = new NumericsVector2(preview.Position.X, preview.Position.Y);
         preview.Modulate = _towerPlacementSystem.CanPlace(_simulation.World, position)
@@ -166,4 +187,15 @@ public sealed partial class Main : Node2D
             _projectileViews.Add(entity, projectileView);
         }
     }
+
+    private GamePhase GetGamePhase()
+    {
+        return _simulation.World.TryGetComponent<GameStatus>(
+            _gameStateEntity,
+            out var status)
+            ? status.Phase
+            : GamePhase.Ready;
+    }
+
+    private bool IsGameOver() => GetGamePhase() is GamePhase.Victory or GamePhase.Defeat;
 }
