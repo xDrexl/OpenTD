@@ -1,16 +1,28 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/generated/terrain_background.svg" id="1_terrain"]
+[ext_resource type="Texture2D" path="res://assets/generated/terrain_tiles.svg" id="1_terrain_tiles"]
 [ext_resource type="Texture2D" path="res://assets/generated/path_marker.svg" id="2_path_marker"]
 [ext_resource type="Texture2D" path="res://assets/generated/spawn_marker.svg" id="3_spawn"]
 [ext_resource type="Texture2D" path="res://assets/generated/base.svg" id="4_base"]
+[ext_resource type="Script" path="res://src/Presentation/MapView.cs" id="5_map_view"]
+[ext_resource type="Texture2D" path="res://assets/generated/obstacle.svg" id="6_obstacle"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_terrain"]
+texture = ExtResource("1_terrain_tiles")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_terrain"]
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_terrain")
 
 [node name="Map" type="Node2D"]
+script = ExtResource("5_map_view")
 
-[node name="Terrain" type="Sprite2D" parent="."]
-texture_filter = 1
-position = Vector2(576, 324)
-texture = ExtResource("1_terrain")
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_terrain")
 
 [node name="PathBorder" type="Line2D" parent="."]
 points = PackedVector2Array(0, 324, 224, 324, 224, 176, 480, 176, 480, 456, 736, 456, 736, 192, 1152, 192)
@@ -69,6 +81,24 @@ texture = ExtResource("3_spawn")
 texture_filter = 1
 position = Vector2(1070, 192)
 texture = ExtResource("4_base")
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="RockCluster1" type="Sprite2D" parent="Obstacles"]
+texture_filter = 1
+position = Vector2(345, 290)
+texture = ExtResource("6_obstacle")
+
+[node name="RockCluster2" type="Sprite2D" parent="Obstacles"]
+texture_filter = 1
+position = Vector2(605, 90)
+texture = ExtResource("6_obstacle")
+
+[node name="RockCluster3" type="Sprite2D" parent="Obstacles"]
+texture_filter = 1
+position = Vector2(870, 390)
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("6_obstacle")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(576, 324)

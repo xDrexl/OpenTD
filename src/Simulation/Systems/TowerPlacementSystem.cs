@@ -23,8 +23,20 @@ public sealed class TowerPlacementSystem(
         }
 
         var radius = definition.PlacementRadius;
+        if (map.BuildZones is { Count: > 0 } &&
+            !map.BuildZones.Any(zone => zone.ContainsCircle(position, radius)))
+        {
+            return false;
+        }
+
         if (position.X < radius || position.X > map.Width - radius ||
             position.Y < radius || position.Y > map.Height - radius)
+        {
+            return false;
+        }
+
+        if (map.Obstacles is not null &&
+            map.Obstacles.Any(obstacle => obstacle.IntersectsCircle(position, radius)))
         {
             return false;
         }

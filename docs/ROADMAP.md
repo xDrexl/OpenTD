@@ -367,6 +367,9 @@ Avoid premature generic status-effect frameworks.
 
 # Phase 15 — Better Maps
 
+Status: first map upgrade complete with TileMap terrain, explicit build zones,
+and obstacle regions.
+
 Add:
 
 - TileMap-based map;
@@ -460,3 +463,5 @@ Do not build tomorrow's framework today.
 - Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
 - Phases 13–14 tower variety and slowing effect: manual runtime validation
   passed on 2026-08-17.
+- Phase 15 TileMap/build zones/obstacles: manual runtime validation passed on
+  2026-08-17.
