@@ -458,5 +458,5 @@ Do not build tomorrow's framework today.
 
 - Phases 7–10: manual runtime validation passed on 2026-08-17.
 - Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
-- Phase 13 rapid-fire tower: manual runtime validation pending.
-- Phase 14 slowing tower/effect: manual runtime validation pending.
+- Phases 13–14 tower variety and slowing effect: manual runtime validation
+  passed on 2026-08-17.
