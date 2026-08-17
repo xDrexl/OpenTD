@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTD", "OpenTD.csproj", "{29FEE43B-3D19-4638-92E8-173C2EAE718A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTD.Tests", "tests\OpenTD.Tests.csproj", "{A8E8C4F3-F85F-4C0D-A166-34EF06E9B263}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29FEE43B-3D19-4638-92E8-173C2EAE718A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29FEE43B-3D19-4638-92E8-173C2EAE718A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29FEE43B-3D19-4638-92E8-173C2EAE718A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29FEE43B-3D19-4638-92E8-173C2EAE718A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8E8C4F3-F85F-4C0D-A166-34EF06E9B263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8E8C4F3-F85F-4C0D-A166-34EF06E9B263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8E8C4F3-F85F-4C0D-A166-34EF06E9B263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8E8C4F3-F85F-4C0D-A166-34EF06E9B263}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,217 @@
+# OpenTD Development Workflow
+
+## Objective
+
+Allow Codex to complete most tasks using minimal repository context and automatic verification.
+
+---
+
+# Task Loop
+
+For every task:
+
+```text
+Understand
+   ↓
+Locate
+   ↓
+Change
+   ↓
+Targeted Test
+   ↓
+Build
+   ↓
+Godot Validation
+   ↓
+Review Diff
+   ↓
+Commit
+```
+
+---
+
+## 1. Understand
+
+Define the requested observable behaviour.
+
+Do not expand scope.
+
+---
+
+## 2. Locate
+
+Search for relevant symbols/files.
+
+Read only the smallest relevant subsystem.
+
+Do not begin with whole-repository exploration.
+
+---
+
+## 3. Change
+
+Make the smallest architecture-compatible implementation.
+
+Avoid unrelated refactoring.
+
+---
+
+## 4. Test
+
+Run the narrowest relevant tests first.
+
+Then run broader tests if shared behaviour changed.
+
+---
+
+## 5. Build
+
+Typical .NET validation:
+
+```bash
+dotnet build
+```
+
+Use repository-specific commands when provided.
+
+---
+
+## 6. Godot Validation
+
+Use headless Godot where applicable.
+
+Example:
+
+```bash
+godot --headless --path . --quit
+```
+
+Command may differ depending on installed executable/version.
+
+---
+
+## 7. Diff Review
+
+Before completion inspect:
+
+```bash
+git status
+git diff
+```
+
+Check for:
+
+- unintended files;
+- generated cache files;
+- unrelated formatting;
+- accidental deletions;
+- secrets.
+
+---
+
+# GitHub Workflow
+
+## Branches
+
+Never develop new work directly on the protected primary branch.
+
+Use focused branches:
+
+```text
+feature/tower-placement
+feature/wave-system
+fix/targeting-range
+refactor/entity-query
+```
+
+---
+
+## Commits
+
+Prefer small logical commits.
+
+Format:
+
+```text
+type: concise description
+```
+
+Examples:
+
+```text
+feat: add basic enemy movement
+feat: add tower targeting
+fix: prevent invalid tower placement
+test: cover armor damage calculation
+refactor: isolate wave configuration
+docs: update ECS boundary rules
+```
+
+Recommended types:
+
+- `feat`
+- `fix`
+- `refactor`
+- `test`
+- `docs`
+- `chore`
+
+---
+
+## Pull Requests
+
+A PR should normally contain one coherent feature/fix.
+
+PR description should state:
+
+- purpose;
+- important architectural impact;
+- validation performed.
+
+Avoid extensive narrative.
+
+---
+
+# Token Efficiency Rules
+
+## Search Before Read
+
+Prefer symbol/text search over opening directories recursively.
+
+## Read Locally
+
+If changing targeting, start with targeting files.
+
+Do not inspect saving, UI, waves, etc. without evidence they matter.
+
+## Prefer Tests as Context
+
+Tests should document expected behaviour more efficiently than prose.
+
+## Avoid Repeated Context
+
+Do not repeatedly re-read stable documentation during one task.
+
+## Avoid Architecture Churn
+
+Do not replace established architecture merely because another solution is possible.
+
+## Avoid Generated Noise
+
+Never include caches/build output in source-control context.
+
+---
+
+# Definition of Done
+
+A task is complete when:
+
+- requested behaviour exists;
+- architecture remains valid;
+- relevant tests pass;
+- project builds;
+- Godot validation passes when applicable;
+- diff contains only intended changes;
+- documentation is updated only if required.
+
+A playable feature should additionally be manually observable in the game.
