@@ -20,7 +20,12 @@ public sealed class MovementSystem : ISystem
 
             var movement = world.GetComponent<Movement>(entity);
             var position = world.GetComponent<Position>(entity).Value;
-            var remainingDistance = Math.Max(0, movement.Speed) * deltaSeconds;
+            var speedMultiplier = world.TryGetComponent<SlowEffect>(entity, out var slow)
+                ? slow.SpeedMultiplier
+                : 1;
+            var remainingDistance = Math.Max(0, movement.Speed) *
+                                    Math.Clamp(speedMultiplier, 0, 1) *
+                                    deltaSeconds;
             var nextWaypointIndex = progress.NextWaypointIndex;
 
             while (remainingDistance > 0 && nextWaypointIndex < progress.Waypoints.Count)

@@ -34,6 +34,7 @@ public sealed partial class Main : Node2D
         _simulation = new GameSimulation(
         [
             new WaveSystem(_waveConfiguration),
+            new SlowSystem(),
             new MovementSystem(),
             new PathCompletionSystem(),
             new BaseDamageSystem(),
@@ -189,6 +190,7 @@ public sealed partial class Main : Node2D
     {
         TowerArchetypeId.Basic => "res://scenes/Tower.tscn",
         TowerArchetypeId.Rapid => "res://scenes/RapidTower.tscn",
+        TowerArchetypeId.Slowing => "res://scenes/SlowingTower.tscn",
         _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
     };
 
@@ -200,6 +202,7 @@ public sealed partial class Main : Node2D
         {
             TowerArchetypeId.Basic => "res://assets/generated/tower.svg",
             TowerArchetypeId.Rapid => "res://assets/generated/rapid_tower.svg",
+            TowerArchetypeId.Slowing => "res://assets/generated/slowing_tower.svg",
             _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
         });
     }

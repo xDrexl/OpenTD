@@ -350,6 +350,9 @@ Shared mechanics should emerge from reusable components/systems.
 
 # Phase 14 — Status Effects
 
+Status: first concrete effect complete with a slow-on-hit tower. Generic status
+effect infrastructure remains deferred until a second real effect exists.
+
 Add generic effects only once at least two real use cases exist.
 
 Examples:
@@ -456,3 +459,4 @@ Do not build tomorrow's framework today.
 - Phases 7–10: manual runtime validation passed on 2026-08-17.
 - Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
 - Phase 13 rapid-fire tower: manual runtime validation pending.
+- Phase 14 slowing tower/effect: manual runtime validation pending.

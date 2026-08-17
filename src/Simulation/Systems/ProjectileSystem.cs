@@ -29,6 +29,15 @@ public sealed class ProjectileSystem : ISystem
             {
                 var damage = world.GetComponent<Damage>(entity);
                 world.Emit(new DamageRequested(projectile.Target, damage.Amount));
+                if (world.TryGetComponent<SlowOnHit>(entity, out var slow))
+                {
+                    world.Emit(
+                        new SlowRequested(
+                            projectile.Target,
+                            slow.SpeedMultiplier,
+                            slow.DurationSeconds));
+                }
+
                 world.DestroyEntity(entity);
                 continue;
             }

@@ -9,4 +9,5 @@ public sealed record TowerDefinition(
     float AttackRange,
     float AttackIntervalSeconds,
     int AttackDamage,
-    float ProjectileSpeed);
+    float ProjectileSpeed,
+    SlowDefinition? Slow = null);
