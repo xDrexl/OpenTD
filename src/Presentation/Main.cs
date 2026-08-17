@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using OpenTD.Infrastructure.Persistence;
 using OpenTD.Simulation.Commands;
 using OpenTD.Simulation.Components;
 using OpenTD.Simulation.Configuration;
@@ -13,51 +14,51 @@ namespace OpenTD.Presentation;
 
 public sealed partial class Main : Node2D
 {
-    private readonly GameSimulation _simulation;
-    private readonly TowerPlacementSystem _towerPlacementSystem;
-    private readonly TowerPlacementConfiguration _towerPlacementConfiguration;
-    private readonly WaveConfiguration _waveConfiguration;
+    private GameSimulation _simulation = null!;
+    private TowerPlacementSystem _towerPlacementSystem = null!;
+    private TowerPlacementConfiguration _towerPlacementConfiguration = null!;
+    private WaveConfiguration _waveConfiguration = null!;
+    private RunCheckpointStore _checkpointStore = null!;
+    private RunProgressionService _runProgression = null!;
+    private RunCheckpoint _checkpoint;
+    private bool _terminalCheckpointHandled;
     private TowerArchetypeId _selectedTowerArchetype = TowerArchetypeId.Basic;
     private Entity _gameStateEntity;
     private readonly Dictionary<Entity, EnemyView> _enemyViews = [];
     private readonly Dictionary<Entity, TowerView> _towerViews = [];
     private readonly Dictionary<Entity, ProjectileView> _projectileViews = [];
 
-    public Main()
-    {
-        var map = MapConfiguration.CreateDefault();
-        _waveConfiguration = WaveConfiguration.CreateDefault(map);
-        _towerPlacementConfiguration = TowerPlacementConfiguration.Default;
-        _towerPlacementSystem = new TowerPlacementSystem(
-            map,
-            _towerPlacementConfiguration);
-        _simulation = new GameSimulation(
-        [
-            new WaveSystem(_waveConfiguration),
-            new SlowSystem(),
-            new MovementSystem(),
-            new PathCompletionSystem(),
-            new BaseDamageSystem(),
-            _towerPlacementSystem,
-            new TargetingSystem(),
-            new AttackSystem(),
-            new ProjectileSystem(),
-            new DamageSystem(),
-            new DeathSystem(),
-            new EconomySystem(),
-            new GameStateSystem(),
-        ]);
-    }
-
     public override void _Ready()
     {
+        _checkpointStore = GodotRunCheckpointStore.Create();
+        _runProgression = new RunProgressionService(_checkpointStore);
+        if (!_checkpointStore.TryLoad(out _checkpoint))
+        {
+            SetProcess(false);
+            SetProcessUnhandledInput(false);
+            GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
+            return;
+        }
+
+        var map = new ProceduralMapGenerator().Generate(
+            _checkpoint.RunSeed,
+            _checkpoint.StageNumber);
+        InitializeSimulation(map);
+        GetNode<MapView>("Map").Initialize(map);
+
         _gameStateEntity = _simulation.World.CreateEntity();
         _simulation.World.SetComponent(
             _gameStateEntity,
             new GameStatus(GamePhase.Ready));
         GetNode<GameStateView>("Interface/GameState").Initialize(
             _simulation.World,
-            _gameStateEntity);
+            _gameStateEntity,
+            StartNextStage,
+            ReturnToMainMenu);
+        GetNode<Label>("Interface/Stage").Text = $"Stage {_checkpoint.StageNumber}";
+        GetNode<Button>("Interface/PauseMenu/Panel/Resume").Pressed += TogglePause;
+        GetNode<Button>("Interface/PauseMenu/Panel/MainMenu").Pressed += ReturnToMainMenu;
+        GetNode<Button>("Interface/PauseMenu/Panel/Quit").Pressed += Quit;
 
         var baseEntity = _simulation.World.CreateEntity();
         _simulation.World.SetComponent(baseEntity, new Base());
@@ -88,8 +89,40 @@ public sealed partial class Main : Node2D
         ConfigurePlacementPreview();
     }
 
+    private void InitializeSimulation(MapConfiguration map)
+    {
+        _waveConfiguration = WaveConfiguration.CreateForStage(
+            map,
+            _checkpoint.StageNumber);
+        _towerPlacementConfiguration = TowerPlacementConfiguration.Default;
+        _towerPlacementSystem = new TowerPlacementSystem(
+            map,
+            _towerPlacementConfiguration);
+        _simulation = new GameSimulation(
+        [
+            new WaveSystem(_waveConfiguration),
+            new SlowSystem(),
+            new MovementSystem(),
+            new PathCompletionSystem(),
+            new BaseDamageSystem(),
+            _towerPlacementSystem,
+            new TargetingSystem(),
+            new AttackSystem(),
+            new ProjectileSystem(),
+            new DamageSystem(),
+            new DeathSystem(),
+            new EconomySystem(),
+            new GameStateSystem(),
+        ]);
+    }
+
     public override void _Process(double delta)
     {
+        if (GetTree().Paused)
+        {
+            return;
+        }
+
         UpdatePlacementPreview();
         if (!IsGameOver())
         {
@@ -99,10 +132,28 @@ public sealed partial class Main : Node2D
         SynchronizeEnemyViews();
         SynchronizeTowerViews();
         SynchronizeProjectileViews();
+        HandleTerminalCheckpoint();
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (@event is InputEventKey
+            {
+                Keycode: Key.Escape,
+                Pressed: true,
+                Echo: false,
+            } && !IsGameOver())
+        {
+            TogglePause();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        if (GetTree().Paused)
+        {
+            return;
+        }
+
         if (GetGamePhase() == GamePhase.Running &&
             @event is InputEventMouseButton
             {
@@ -247,4 +298,45 @@ public sealed partial class Main : Node2D
     }
 
     private bool IsGameOver() => GetGamePhase() is GamePhase.Victory or GamePhase.Defeat;
+
+    private void HandleTerminalCheckpoint()
+    {
+        if (_terminalCheckpointHandled)
+        {
+            return;
+        }
+
+        switch (GetGamePhase())
+        {
+            case GamePhase.Victory:
+                _checkpoint = _runProgression.CompleteStage(_checkpoint);
+                _terminalCheckpointHandled = true;
+                break;
+            case GamePhase.Defeat:
+                _runProgression.EndRun();
+                _terminalCheckpointHandled = true;
+                break;
+        }
+    }
+
+    private void StartNextStage() => GetTree().ReloadCurrentScene();
+
+    private void TogglePause()
+    {
+        var paused = !GetTree().Paused;
+        GetTree().Paused = paused;
+        GetNode<Control>("Interface/PauseMenu").Visible = paused;
+    }
+
+    private void ReturnToMainMenu()
+    {
+        GetTree().Paused = false;
+        GetTree().ChangeSceneToFile("res://scenes/MainMenu.tscn");
+    }
+
+    private void Quit()
+    {
+        GetTree().Paused = false;
+        GetTree().Quit();
+    }
 }

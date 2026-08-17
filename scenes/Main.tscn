@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://src/Presentation/PlacementPreviewView.cs" id="9_placement_preview"]
 
 [node name="Main" type="Node2D"]
+process_mode = 3
 script = ExtResource("1_main")
 
 [node name="Map" parent="." instance=ExtResource("2_map")]
@@ -61,6 +62,19 @@ theme_override_font_sizes/font_size = 22
 text = "Wave 1/3  Enemies: 3"
 horizontal_alignment = 2
 script = ExtResource("6_wave")
+
+[node name="Stage" type="Label" parent="Interface"]
+offset_left = 486.0
+offset_top = 20.0
+offset_right = 666.0
+offset_bottom = 54.0
+theme_override_colors/font_color = Color(1, 0.92549, 0.72549, 1)
+theme_override_colors/font_shadow_color = Color(0.117647, 0.0784314, 0.0470588, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 26
+text = "Stage 1"
+horizontal_alignment = 1
 
 [node name="TowerSelection" type="HBoxContainer" parent="Interface"]
 offset_left = 20.0
@@ -124,11 +138,76 @@ theme_override_font_sizes/font_size = 40
 text = "Victory!"
 horizontal_alignment = 1
 
-[node name="Restart" type="Button" parent="Interface/GameState/Panel"]
+[node name="Action" type="Button" parent="Interface/GameState/Panel"]
 layout_mode = 0
 offset_left = 80.0
 offset_top = 124.0
 offset_right = 240.0
 offset_bottom = 174.0
 theme_override_font_sizes/font_size = 22
-text = "Restart"
+text = "Next Stage"
+
+[node name="PauseMenu" type="Control" parent="Interface"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Dimmer" type="ColorRect" parent="Interface/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0352941, 0.0235294, 0.0156863, 0.745098)
+
+[node name="Panel" type="ColorRect" parent="Interface/PauseMenu"]
+layout_mode = 0
+offset_left = 416.0
+offset_top = 170.0
+offset_right = 736.0
+offset_bottom = 478.0
+color = Color(0.101961, 0.0745098, 0.0509804, 0.980392)
+
+[node name="Title" type="Label" parent="Interface/PauseMenu/Panel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 28.0
+offset_right = 300.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 0.92549, 0.72549, 1)
+theme_override_font_sizes/font_size = 36
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="Interface/PauseMenu/Panel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 100.0
+offset_right = 250.0
+offset_bottom = 150.0
+theme_override_font_sizes/font_size = 21
+text = "Resume"
+
+[node name="MainMenu" type="Button" parent="Interface/PauseMenu/Panel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 166.0
+offset_right = 250.0
+offset_bottom = 216.0
+theme_override_font_sizes/font_size = 21
+text = "Main Menu"
+
+[node name="Quit" type="Button" parent="Interface/PauseMenu/Panel"]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 232.0
+offset_right = 250.0
+offset_bottom = 282.0
+theme_override_font_sizes/font_size = 21
+text = "Quit"
