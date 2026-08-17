@@ -448,3 +448,4 @@ Do not build tomorrow's framework today.
 - Phase 7 combat: manual runtime validation pending.
 - Phase 8 economy: manual runtime validation pending.
 - Phase 9 waves: manual runtime validation pending.
+- Phase 10 game states and restart: manual runtime validation pending.
