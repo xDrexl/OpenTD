@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://src/Presentation/Main.cs" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Map.tscn" id="2_map"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://src/Presentation/WaveView.cs" id="6_wave"]
 [ext_resource type="Script" path="res://src/Presentation/GameStateView.cs" id="7_game_state"]
 [ext_resource type="Script" path="res://src/Presentation/TowerSelectionView.cs" id="8_tower_selection"]
+[ext_resource type="Script" path="res://src/Presentation/PlacementPreviewView.cs" id="9_placement_preview"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -17,6 +18,7 @@ script = ExtResource("1_main")
 [node name="PlacementPreview" type="Sprite2D" parent="."]
 texture_filter = 1
 texture = ExtResource("4_tower")
+script = ExtResource("9_placement_preview")
 
 [node name="Interface" type="CanvasLayer" parent="."]
 

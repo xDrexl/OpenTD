@@ -24,6 +24,9 @@ public sealed partial class TowerSelectionView : HBoxContainer
         basicButton.Text = $"Basic ({basic.BuildCost})";
         rapidButton.Text = $"Rapid ({rapid.BuildCost})";
         slowingButton.Text = $"Slowing ({slowing.BuildCost})";
+        basicButton.TooltipText = $"Balanced tower — {basic.AttackDamage} damage, {basic.AttackRange:0} range";
+        rapidButton.TooltipText = $"Fast attacks — {rapid.AttackDamage} damage, {rapid.AttackRange:0} range";
+        slowingButton.TooltipText = $"Slows enemies — {slowing.AttackDamage} damage, {slowing.AttackRange:0} range";
         basicButton.Pressed += () => Select(TowerArchetypeId.Basic);
         rapidButton.Pressed += () => Select(TowerArchetypeId.Rapid);
         slowingButton.Pressed += () => Select(TowerArchetypeId.Slowing);
@@ -32,9 +35,15 @@ public sealed partial class TowerSelectionView : HBoxContainer
 
     private void Select(TowerArchetypeId archetype)
     {
-        GetNode<Button>("Basic").ButtonPressed = archetype == TowerArchetypeId.Basic;
-        GetNode<Button>("Rapid").ButtonPressed = archetype == TowerArchetypeId.Rapid;
-        GetNode<Button>("Slowing").ButtonPressed = archetype == TowerArchetypeId.Slowing;
+        SetSelected(GetNode<Button>("Basic"), archetype == TowerArchetypeId.Basic);
+        SetSelected(GetNode<Button>("Rapid"), archetype == TowerArchetypeId.Rapid);
+        SetSelected(GetNode<Button>("Slowing"), archetype == TowerArchetypeId.Slowing);
         _selectionChanged?.Invoke(archetype);
+    }
+
+    private static void SetSelected(Button button, bool isSelected)
+    {
+        button.ButtonPressed = isSelected;
+        button.Modulate = isSelected ? new Color(1, 0.9f, 0.45f) : Colors.White;
     }
 }

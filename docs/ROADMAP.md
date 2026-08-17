@@ -384,6 +384,9 @@ Only introduce dynamic pathfinding if gameplay requires it.
 
 # Phase 16 — Persistence
 
+Status: deferred until the MVP has meaningful settings, unlocks, progression, or
+scores to persist. Runtime ECS state will not be saved prematurely.
+
 Add only when meaningful persistent state exists.
 
 Potential:
@@ -400,6 +403,8 @@ Persist domain state.
 ---
 
 # Phase 17 — Presentation Pass
+
+Status: first presentation pass implemented; manual runtime validation pending.
 
 Improve:
 

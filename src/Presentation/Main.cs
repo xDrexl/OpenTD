@@ -85,6 +85,7 @@ public sealed partial class Main : Node2D
             _towerPlacementConfiguration,
             _selectedTowerArchetype,
             SelectTower);
+        ConfigurePlacementPreview();
     }
 
     public override void _Process(double delta)
@@ -119,7 +120,7 @@ public sealed partial class Main : Node2D
 
     private void UpdatePlacementPreview()
     {
-        var preview = GetNode<Sprite2D>("PlacementPreview");
+        var preview = GetNode<PlacementPreviewView>("PlacementPreview");
         preview.Visible = GetGamePhase() == GamePhase.Running;
         if (!preview.Visible)
         {
@@ -128,12 +129,10 @@ public sealed partial class Main : Node2D
 
         preview.Position = GetGlobalMousePosition();
         var position = new NumericsVector2(preview.Position.X, preview.Position.Y);
-        preview.Modulate = _towerPlacementSystem.CanPlace(
-                _simulation.World,
-                position,
-                _selectedTowerArchetype)
-            ? new Color(0.55f, 1, 0.55f, 0.65f)
-            : new Color(1, 0.4f, 0.4f, 0.65f);
+        preview.SetValidity(_towerPlacementSystem.CanPlace(
+            _simulation.World,
+            position,
+            _selectedTowerArchetype));
     }
 
     private void SynchronizeTowerViews()
@@ -197,7 +196,7 @@ public sealed partial class Main : Node2D
     private void SelectTower(TowerArchetypeId archetype)
     {
         _selectedTowerArchetype = archetype;
-        var preview = GetNode<Sprite2D>("PlacementPreview");
+        var preview = GetNode<PlacementPreviewView>("PlacementPreview");
         preview.Texture = GD.Load<Texture2D>(archetype switch
         {
             TowerArchetypeId.Basic => "res://assets/generated/tower.svg",
@@ -205,6 +204,13 @@ public sealed partial class Main : Node2D
             TowerArchetypeId.Slowing => "res://assets/generated/slowing_tower.svg",
             _ => throw new System.ArgumentOutOfRangeException(nameof(archetype)),
         });
+        ConfigurePlacementPreview();
+    }
+
+    private void ConfigurePlacementPreview()
+    {
+        GetNode<PlacementPreviewView>("PlacementPreview").Configure(
+            _towerPlacementConfiguration.GetDefinition(_selectedTowerArchetype));
     }
 
     private void SynchronizeProjectileViews()

@@ -27,8 +27,12 @@ public sealed partial class WaveView : Label
             return;
         }
 
-        Text = state.IsComplete
-            ? "Waves complete"
-            : $"Wave {state.CurrentWave}/{state.TotalWaves}  Enemies: {state.RemainingEnemies}";
+        Text = state switch
+        {
+            { IsComplete: true } => "Waves complete",
+            { IsBetweenWaves: true } =>
+                $"Wave {state.CurrentWave}/{state.TotalWaves} complete  Next in {Mathf.CeilToInt(state.SecondsRemaining)}s",
+            _ => $"Wave {state.CurrentWave}/{state.TotalWaves}  Enemies: {state.RemainingEnemies}",
+        };
     }
 }

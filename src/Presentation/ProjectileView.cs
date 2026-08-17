@@ -26,6 +26,11 @@ public sealed partial class ProjectileView : Sprite2D
 
         if (!_world.IsAlive(_entity))
         {
+            if (GetParent() is { } parent)
+            {
+                ImpactEffect.Spawn(parent, Position, new Color(1, 0.82f, 0.25f));
+            }
+
             QueueFree();
             return;
         }
