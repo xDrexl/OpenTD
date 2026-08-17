@@ -445,7 +445,4 @@ Do not build tomorrow's framework today.
 
 # Manual Validation Status
 
-- Phase 7 combat: manual runtime validation pending.
-- Phase 8 economy: manual runtime validation pending.
-- Phase 9 waves: manual runtime validation pending.
-- Phase 10 game states and restart: manual runtime validation pending.
+- Phases 7–10: manual runtime validation passed on 2026-08-17.
