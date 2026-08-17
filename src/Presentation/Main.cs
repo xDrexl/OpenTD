@@ -24,12 +24,21 @@ public sealed partial class Main : Node
     [
         new MovementSystem(),
         new PathCompletionSystem(),
+        new BaseDamageSystem(),
     ]);
 
     public override void _Ready()
     {
+        var baseEntity = _simulation.World.CreateEntity();
+        _simulation.World.SetComponent(baseEntity, new Base());
+        _simulation.World.SetComponent(baseEntity, new Health(20, 20));
+
+        GetNode<BaseHealthView>("Interface/BaseHealth").Initialize(
+            _simulation.World,
+            baseEntity);
+
         var enemy = _simulation.World.CreateEntity();
-        _simulation.World.SetComponent(enemy, new Enemy());
+        _simulation.World.SetComponent(enemy, new Enemy(1));
         _simulation.World.SetComponent(enemy, new Position(MapPath[0]));
         _simulation.World.SetComponent(enemy, new Movement(100));
         _simulation.World.SetComponent(enemy, new PathProgress(MapPath, 1));

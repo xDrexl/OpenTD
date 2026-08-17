@@ -1,9 +1,25 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://src/Presentation/Main.cs" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/Map.tscn" id="2_map"]
+[ext_resource type="Script" path="res://src/Presentation/BaseHealthView.cs" id="3_base_health"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
 
 [node name="Map" parent="." instance=ExtResource("2_map")]
+
+[node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="BaseHealth" type="Label" parent="Interface"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 52.0
+theme_override_colors/font_color = Color(1, 0.92549, 0.72549, 1)
+theme_override_colors/font_shadow_color = Color(0.117647, 0.0784314, 0.0470588, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 24
+text = "Base: 20/20"
+script = ExtResource("3_base_health")

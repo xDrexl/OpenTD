@@ -52,7 +52,7 @@ public sealed class MovementSystemTests
     {
         var world = new SimulationWorld();
         var enemy = world.CreateEntity();
-        world.SetComponent(enemy, new Enemy());
+        world.SetComponent(enemy, new Enemy(1));
         world.SetComponent(enemy, new Position(path[0]));
         world.SetComponent(enemy, new Movement(10));
         world.SetComponent(enemy, new PathProgress(path, 1));
