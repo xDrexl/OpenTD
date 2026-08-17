@@ -479,6 +479,8 @@ Run rules agreed for this cycle:
 
 Goal: provide an explicit entry point for starting and resuming runs.
 
+Status: complete. Manual runtime validation passed on 2026-08-17.
+
 Add:
 
 - a main-menu scene as the application entry point;
@@ -495,6 +497,8 @@ Exit criteria:
 # Phase 21 — Stage Checkpoint Save/Load
 
 Goal: resume an endless run safely without serializing runtime ECS internals.
+
+Status: complete. Manual runtime validation passed on 2026-08-17.
 
 Add:
 
@@ -526,6 +530,8 @@ Exit criteria:
 
 Goal: generate a different valid battlefield for every stage.
 
+Status: complete. Manual runtime validation passed on 2026-08-17.
+
 Add:
 
 - an engine-independent deterministic map generator using run seed and stage;
@@ -552,6 +558,8 @@ Exit criteria:
 
 Goal: connect completed stages into an endless run with increasing wave counts.
 
+Status: complete. Manual runtime validation passed on 2026-08-17.
+
 Add:
 
 - stage-aware wave configuration;
@@ -561,6 +569,8 @@ Add:
 - a stage-complete overlay with a Next Stage action;
 - next-stage checkpoint creation before advancement;
 - a defeat flow that deletes the checkpoint and returns to the main menu.
+- an ESC pause menu with Resume, Main Menu, and Quit actions; returning to the
+  main menu preserves the current stage-start checkpoint.
 
 Each new stage creates a fresh simulation with default base health and currency
 and no placed towers.
@@ -585,6 +595,8 @@ Before declaring the MVP candidate ready, manually verify:
 - confirm that every later stage adds one wave;
 - confirm that health, currency, and towers reset between stages;
 - lose a run and confirm that Continue is no longer available.
+- pause with ESC, resume, return to the main menu, and confirm the stage can be
+  continued from its stage-start checkpoint.
 
 ---
 

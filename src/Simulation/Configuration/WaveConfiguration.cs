@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using OpenTD.Simulation.Components;
@@ -9,8 +10,17 @@ public sealed record WaveConfiguration(
     float InterWaveDelaySeconds,
     IReadOnlyList<Vector2> Path)
 {
-    public static WaveConfiguration CreateDefault(MapConfiguration map) => new(
-        new WaveDefinition[]
+    public static WaveConfiguration CreateDefault(MapConfiguration map) =>
+        CreateForStage(map, 1);
+
+    public static WaveConfiguration CreateForStage(MapConfiguration map, int stageNumber)
+    {
+        if (stageNumber < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(stageNumber));
+        }
+
+        var establishedWaves = new WaveDefinition[]
         {
             new(
                 new EnemyConfiguration[]
@@ -42,9 +52,18 @@ public sealed record WaveConfiguration(
                     FastEnemy(health: 9, baseDamage: 2),
                 },
                 1),
-        },
-        InterWaveDelaySeconds: 3,
-        Path: map.Path);
+        };
+        var waves = new WaveDefinition[stageNumber + 2];
+        for (var index = 0; index < waves.Length; index++)
+        {
+            waves[index] = establishedWaves[index % establishedWaves.Length];
+        }
+
+        return new WaveConfiguration(
+            waves,
+            InterWaveDelaySeconds: 3,
+            Path: map.Path);
+    }
 
     private static EnemyConfiguration BasicEnemy(
         float speed = 100,

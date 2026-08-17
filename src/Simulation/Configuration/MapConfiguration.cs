@@ -9,7 +9,8 @@ public sealed record MapConfiguration(
     float PathHalfWidth,
     IReadOnlyList<Vector2> Path,
     IReadOnlyList<MapRegion>? BuildZones = null,
-    IReadOnlyList<MapRegion>? Obstacles = null)
+    IReadOnlyList<MapRegion>? Obstacles = null,
+    int TerrainSeed = 0)
 {
     public static MapConfiguration CreateDefault() => new(
         1152,
