@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Presentation/ProjectileView.cs" id="1_projectile_view"]
+[ext_resource type="Texture2D" path="res://assets/generated/projectile.svg" id="2_projectile"]
+
+[node name="Projectile" type="Sprite2D"]
+texture_filter = 1
+texture = ExtResource("2_projectile")
+script = ExtResource("1_projectile_view")

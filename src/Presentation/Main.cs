@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using OpenTD.Simulation.Commands;
 using OpenTD.Simulation.Components;
 using OpenTD.Simulation.Configuration;
@@ -15,6 +16,7 @@ public sealed partial class Main : Node2D
     private readonly GameSimulation _simulation;
     private readonly TowerPlacementSystem _towerPlacementSystem;
     private readonly Dictionary<Entity, TowerView> _towerViews = [];
+    private readonly Dictionary<Entity, ProjectileView> _projectileViews = [];
 
     public Main()
     {
@@ -29,6 +31,10 @@ public sealed partial class Main : Node2D
             new BaseDamageSystem(),
             _towerPlacementSystem,
             new TargetingSystem(),
+            new AttackSystem(),
+            new ProjectileSystem(),
+            new DamageSystem(),
+            new DeathSystem(),
         ]);
         MapPath = map.Path;
     }
@@ -53,6 +59,7 @@ public sealed partial class Main : Node2D
 
         var enemy = _simulation.World.CreateEntity();
         _simulation.World.SetComponent(enemy, new Enemy(1));
+        _simulation.World.SetComponent(enemy, new Health(10, 10));
         _simulation.World.SetComponent(enemy, new Position(MapPath[0]));
         _simulation.World.SetComponent(enemy, new Movement(100));
         _simulation.World.SetComponent(enemy, new PathProgress(MapPath, 1));
@@ -68,6 +75,7 @@ public sealed partial class Main : Node2D
         UpdatePlacementPreview();
         _simulation.Tick((float)delta);
         SynchronizeTowerViews();
+        SynchronizeProjectileViews();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -108,6 +116,30 @@ public sealed partial class Main : Node2D
             towerView.Initialize(_simulation.World, entity);
             AddChild(towerView);
             _towerViews.Add(entity, towerView);
+        }
+    }
+
+    private void SynchronizeProjectileViews()
+    {
+        foreach (var entity in _projectileViews.Keys
+                     .Where(entity => !_simulation.World.IsAlive(entity))
+                     .ToArray())
+        {
+            _projectileViews.Remove(entity);
+        }
+
+        foreach (var entity in _simulation.World.Query<Projectile, Position>())
+        {
+            if (_projectileViews.ContainsKey(entity))
+            {
+                continue;
+            }
+
+            var projectileScene = GD.Load<PackedScene>("res://scenes/Projectile.tscn");
+            var projectileView = projectileScene.Instantiate<ProjectileView>();
+            projectileView.Initialize(_simulation.World, entity);
+            AddChild(projectileView);
+            _projectileViews.Add(entity, projectileView);
         }
     }
 }

@@ -60,6 +60,12 @@ public sealed class TowerPlacementSystem(
             world.SetComponent(tower, new Position(command.Position));
             world.SetComponent(tower, new BuildCost(configuration.BuildCost));
             world.SetComponent(tower, new AttackRange(configuration.AttackRange));
+            world.SetComponent(
+                tower,
+                new AttackCooldown(configuration.AttackIntervalSeconds, 0));
+            world.SetComponent(
+                tower,
+                new AttackStats(configuration.AttackDamage, configuration.ProjectileSpeed));
         }
     }
 

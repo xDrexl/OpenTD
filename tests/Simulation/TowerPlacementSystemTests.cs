@@ -16,7 +16,13 @@ public sealed class TowerPlacementSystemTests
         10,
         new Vector2[] { new(0, 100), new(200, 100) });
 
-    private static readonly TowerPlacementConfiguration Configuration = new(5, 10, 50);
+    private static readonly TowerPlacementConfiguration Configuration = new(
+        5,
+        10,
+        50,
+        1,
+        2,
+        100);
 
     [Fact]
     public void ValidPlacementCreatesTowerAndDeductsCurrency()
@@ -31,6 +37,8 @@ public sealed class TowerPlacementSystemTests
         Assert.Equal(new Vector2(50, 50), world.GetComponent<Position>(tower).Value);
         Assert.Equal(5, world.GetComponent<BuildCost>(tower).Amount);
         Assert.Equal(50, world.GetComponent<AttackRange>(tower).Radius);
+        Assert.Equal(1, world.GetComponent<AttackCooldown>(tower).IntervalSeconds);
+        Assert.Equal(new AttackStats(2, 100), world.GetComponent<AttackStats>(tower));
         var currency = Assert.Single(world.Query<Currency>());
         Assert.Equal(5, world.GetComponent<Currency>(currency).Amount);
     }
