@@ -35,6 +35,7 @@ public sealed partial class Main : Node2D
             new ProjectileSystem(),
             new DamageSystem(),
             new DeathSystem(),
+            new EconomySystem(),
         ]);
         MapPath = map.Path;
     }
@@ -60,6 +61,7 @@ public sealed partial class Main : Node2D
         var enemy = _simulation.World.CreateEntity();
         _simulation.World.SetComponent(enemy, new Enemy(1));
         _simulation.World.SetComponent(enemy, new Health(10, 10));
+        _simulation.World.SetComponent(enemy, new Reward(3));
         _simulation.World.SetComponent(enemy, new Position(MapPath[0]));
         _simulation.World.SetComponent(enemy, new Movement(100));
         _simulation.World.SetComponent(enemy, new PathProgress(MapPath, 1));

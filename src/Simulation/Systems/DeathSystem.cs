@@ -16,7 +16,10 @@ public sealed class DeathSystem : ISystem
                 continue;
             }
 
-            world.Emit(new EnemyDied(enemy));
+            var reward = world.TryGetComponent<Reward>(enemy, out var rewardComponent)
+                ? rewardComponent.Amount
+                : 0;
+            world.Emit(new EnemyDied(enemy, reward));
             world.DestroyEntity(enemy);
         }
     }

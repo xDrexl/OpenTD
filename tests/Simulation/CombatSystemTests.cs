@@ -75,6 +75,7 @@ public sealed class CombatSystemTests
     {
         var world = new SimulationWorld();
         var enemy = CreateEnemy(world, Vector2.Zero, 2);
+        world.SetComponent(enemy, new Reward(3));
         world.Emit(new DamageRequested(enemy, 3));
 
         new DamageSystem().Update(world, 0);
@@ -82,7 +83,9 @@ public sealed class CombatSystemTests
         new DeathSystem().Update(world, 0);
 
         Assert.False(world.IsAlive(enemy));
-        Assert.Equal(enemy, Assert.Single(world.DrainEvents<EnemyDied>()).Enemy);
+        var death = Assert.Single(world.DrainEvents<EnemyDied>());
+        Assert.Equal(enemy, death.Enemy);
+        Assert.Equal(3, death.Reward);
     }
 
     [Fact]

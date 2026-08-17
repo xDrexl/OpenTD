@@ -440,3 +440,10 @@ At every milestone:
 > Add exactly enough architecture for the current requirement plus obvious immediate reuse.
 
 Do not build tomorrow's framework today.
+
+---
+
+# Manual Validation Status
+
+- Phase 7 combat: manual runtime validation pending.
+- Phase 8 economy: manual runtime validation pending.
