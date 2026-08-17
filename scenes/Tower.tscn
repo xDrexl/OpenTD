@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/Presentation/TowerView.cs" id="1_tower_view"]
+[ext_resource type="Texture2D" path="res://assets/generated/tower.svg" id="2_tower"]
+
+[node name="Tower" type="Sprite2D"]
+texture_filter = 1
+texture = ExtResource("2_tower")
+script = ExtResource("1_tower_view")
