@@ -88,6 +88,21 @@ godot --headless --path . --quit
 
 Command may differ depending on installed executable/version.
 
+### Local Windows Installation
+
+On the current development machine, Godot 4.7.1 .NET is installed at:
+
+```text
+C:\Program Files\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64.exe
+C:\Program Files\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe
+```
+
+Use the console executable for headless validation:
+
+```powershell
+& 'C:\Program Files\Godot_v4.7.1-stable_mono_win64\Godot_v4.7.1-stable_mono_win64_console.exe' --headless --path . --quit
+```
+
 ---
 
 ## 7. Diff Review
