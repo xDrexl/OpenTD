@@ -28,6 +28,7 @@ public sealed partial class Main : Node2D
             new PathCompletionSystem(),
             new BaseDamageSystem(),
             _towerPlacementSystem,
+            new TargetingSystem(),
         ]);
         MapPath = map.Path;
     }
