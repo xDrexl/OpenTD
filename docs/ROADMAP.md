@@ -463,4 +463,5 @@ Do not build tomorrow's framework today.
 - Phase 12 fast enemy: manual runtime validation passed on 2026-08-17.
 - Phases 13–14 tower variety and slowing effect: manual runtime validation
   passed on 2026-08-17.
-- Phase 15 TileMap/build zones/obstacles: manual runtime validation pending.
+- Phase 15 TileMap/build zones/obstacles: manual runtime validation passed on
+  2026-08-17.
